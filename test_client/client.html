@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>단어 점자 변환 클라이언트</title>
+</head>
+<body>
+    <h2>단어 점자 이진수 변환 클라이언트</h2>
+    <input type="text" id="inputWord" placeholder="단어 입력 후 Enter">
+    <div id="messages"></div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+        const messagesDiv = document.getElementById('messages');
+        const input = document.getElementById('inputWord');
+
+        ws.onopen = () => {
+            messagesDiv.innerHTML += '<p>서버에 연결되었습니다.</p>';
+        };
+
+        ws.onmessage = (event) => {
+            messagesDiv.innerHTML += `<p>${event.data}</p>`;
+        };
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const value = input.value.trim();
+                if (value.length > 0) {
+                    ws.send(value);
+                    input.value = '';
+                } else {
+                    messagesDiv.innerHTML += '<p>단어를 입력하세요.</p>';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
