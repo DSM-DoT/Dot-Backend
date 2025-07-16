@@ -1,5 +1,4 @@
 const WebSocket = require('ws');
-require("dotenv").config()
 
 let clients = [];//앱, 웹, 단말기 등 소켓이 연결된 장치 배열
 
