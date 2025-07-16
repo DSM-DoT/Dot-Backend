@@ -2,8 +2,8 @@ const WebSocket = require('ws');
 
 let clients = [];//앱, 웹, 단말기 등 소켓이 연결된 장치 배열
 
-const wss = new WebSocket.Server({ port: 8080 });//8080번 포트
-console.log(`WebSocket이 8080번 포트에에서 실행중`);
+const wss = new WebSocket.Server({ port: process.env.PORT });//8080번 포트
+console.log(`WebSocket이 8${process.env.PORT}080번 포트에에서 실행중`);
 
 wss.on('connection', (ws) => {
     console.log('연결됨.');
