@@ -1,9 +1,10 @@
 const WebSocket = require('ws');
+require("dotenv").config()
 
 let clients = [];//앱, 웹, 단말기 등 소켓이 연결된 장치 배열
 
 const wss = new WebSocket.Server({ port: process.env.PORT });//8080번 포트
-console.log(`WebSocket이 8${process.env.PORT}080번 포트에에서 실행중`);
+console.log(`WebSocket이 ${process.env.PORT}번 포트에에서 실행중`);
 
 wss.on('connection', (ws) => {
     console.log('연결됨.');
@@ -11,11 +12,11 @@ wss.on('connection', (ws) => {
 
     //message == 전달받은 이진수 문자열
     ws.on('message', (input) => {//메세지 수신
-      const message = JSON.parse(input).message;
-      console.log('수신됨:', message);
+      const data = JSON.parse(input);
+      console.log('수신됨:', data.str, data.message);
 
       clients.forEach(v => {
-        if(v !== ws) v.send(JSON.stringify({message: message}));//메세지 송신
+        if(v !== ws) v.send(input);//메세지 송신
       })
     });
 
