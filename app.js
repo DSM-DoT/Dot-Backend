@@ -1,13 +1,24 @@
 const http = require('http');
 const WebSocket = require('ws');
 
+/*
+
+http 서버 생성
+http서버 위에 ws 서버 생성
+웹소켓으로 요청이 들어오기를 기다림
+들어오면 clients에 집어넣고,log에 연결됨 출력
+만약 메세지를 보내 message이벤트가 일어나면
+clients에 있는 소켓들에게 메세지 전달
+
+*/
+
 // 1. HTTP 서버 생성
 const server = http.createServer((req, res) => {
   res.writeHead(200);
   res.end('서버 정상 작동 중 (웹소켓 연결은 별도로 시도하세요).');
 });
 
-// 2. WebSocket 서버를 HTTP 서버 위에 생성
+//ws 서버 생성
 const wss = new WebSocket.Server({ server });
 
 let clients = [];
@@ -33,7 +44,6 @@ wss.on('connection', (ws) => {
   });
 });
 
-// 3. 포트 리스닝 (Railway에서 이 포트로 접근)
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`HTTP + WebSocket 서버가 ${PORT}포트에서 실행 중`);
