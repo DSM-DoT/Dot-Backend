@@ -17,12 +17,8 @@ wss.on('connection', (ws) => {
   clients.push(ws);
 
   ws.on('message', (input) => {
-    try{
-      const data = JSON.parse(input);
-      console.log('수신됨:', data);
-    }catch{
-      console.log("JSON으로 변환하는 도중 에러남");
-    }
+    const data = JSON.parse(input);
+    console.log('수신됨:', data);
 
     clients.forEach(v => {
       if (v !== ws) {
