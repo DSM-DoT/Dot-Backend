@@ -1,28 +1,40 @@
+const http = require('http');
 const WebSocket = require('ws');
 
-let clients = [];//앱, 웹, 단말기 등 소켓이 연결된 장치 배열
+// 1. HTTP 서버 생성
+const server = http.createServer((req, res) => {
+  res.writeHead(200);
+  res.end('서버 정상 작동 중 (웹소켓 연결은 별도로 시도하세요).');
+});
 
-const wss = new WebSocket.Server({ port: process.env.PORT || 8089 });//8080번 포트
-console.log(`WebSocket이 ${process.env.PORT || 8089}번 포트에에서 실행중`);
+// 2. WebSocket 서버를 HTTP 서버 위에 생성
+const wss = new WebSocket.Server({ server });
+
+let clients = [];
 
 wss.on('connection', (ws) => {
-  console.log('연결됨.');
+  console.log('클라이언트 웹소켓 연결됨.');
   clients.push(ws);
 
-  //message == 전달받은 이진수 문자열
-  ws.on('message', (input) => {//메세지 수신
+  ws.on('message', (input) => {
     const data = JSON.parse(input);
-    console.log('수신됨:', data.str, data.message);
+    console.log('수신됨:', data);
 
     clients.forEach(v => {
-      if(v !== ws) v.send(JSON.stringify({message: data.message, str: data.str}));//메세지 송신
-    })
+      if (v !== ws) {
+        v.send(JSON.stringify({ message: data.message, str: data.str }));
+      }
+    });
   });
 
   ws.on('close', () => {
-    console.log('연결 끊김');
-    clients = clients.filter(v=>{
-      return ws.id !== v.id
-    })
+    clients = clients.filter(client => client !== ws);
+    console.log('연결 종료됨');
   });
+});
+
+// 3. 포트 리스닝 (Railway에서 이 포트로 접근)
+const PORT = process.env.PORT || 8080;
+server.listen(PORT, () => {
+  console.log(`HTTP + WebSocket 서버가 ${PORT}포트에서 실행 중`);
 });
